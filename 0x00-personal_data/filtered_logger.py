@@ -1,47 +1,61 @@
 #!/usr/bin/env python3
 """
-Filtered Logger module
+This module provides a logger for handling user data with PII redaction.
 """
 
 import logging
 import re
 from typing import List
 
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
 
 class RedactingFormatter(logging.Formatter):
-    """Redacting Formatter class
-
-    This class formats log records to redact sensitive information.
+    """
+    Redacting Formatter class.
     """
 
     REDACTION = "***"
-    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    FORMAT = "[USER_DATA] %(name)s %(levelname)s %(asctime)s: %(message)s"
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
-        """Initialize RedactingFormatter with fields to redact
-
-        Args:
-            fields (List[str]): List of field names whose values should be
-                redacted.
         """
-        super().__init__(self.FORMAT)
+        Initialize the formatter with fields to redact.
+        """
+        super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
 
-    def format(self, record: logging.LogRecord) -> str:
-        """Format log record with redacted fields
-
-        Args:
-            record (logging.LogRecord): The log record to format.
-
-        Returns:
-            str: The formatted log record with sensitive fields redacted.
+    def redact(self, message: str) -> str:
         """
-        message = record.getMessage()
+        Redacts fields in the message.
+        """
         for field in self.fields:
             message = re.sub(
-                rf'{field}=[^;]*',
-                f'{field}={self.REDACTION}',
-                message
+                f"(?<={field}=)[^{self.SEPARATOR}]*", self.REDACTION, message
             )
-        return super().format(record)
+        return message
+
+    def format(self, record: logging.LogRecord) -> str:
+        """
+        Formats the log record and redacts PII fields.
+        """
+        message = super(RedactingFormatter, self).format(record)
+        return self.redact(message)
+
+
+def get_logger() -> logging.Logger:
+    """
+    Returns a logger named "user_data" with INFO level, no propagation,
+    and a StreamHandler with RedactingFormatter.
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    stream_handler = logging.StreamHandler()
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+
+    return logger

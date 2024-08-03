@@ -1,9 +1,10 @@
 import os
 import mysql.connector
 from mysql.connector import errorcode
+from typing import Optional
 
 
-def get_db() -> mysql.connector.connection.MySQLConnection:
+def get_db() -> Optional[mysql.connector.connection.MySQLConnection]:
     """
     Connect to the database using credentials from environment variables.
 

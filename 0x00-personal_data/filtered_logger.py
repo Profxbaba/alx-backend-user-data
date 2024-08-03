@@ -2,6 +2,7 @@ import os
 import mysql.connector
 from mysql.connector import errorcode
 
+
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """
     Connect to the database using credentials from environment variables.

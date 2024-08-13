@@ -7,15 +7,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models.user import Base, User
 
+
 class DB:
     """Database class for handling user data."""
 
     def __init__(self):
         """Initialize the database connection and session."""
-        self.engine = create_engine('sqlite:///mydatabase.db')  # Example for SQLite
+        self.engine = create_engine('sqlite:///mydatabase.db')
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
-        Base.metadata.create_all(self.engine)  # Create tables if they don't exist
+        Base.metadata.create_all(self.engine)
 
     def get_user_by_email(self, email: str) -> User:
         """Retrieve a user by email.

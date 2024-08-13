@@ -7,6 +7,7 @@ from db import DB
 from models.user import User
 import bcrypt
 
+
 class Auth:
     """Auth class to interact with the authentication database.
     """
@@ -43,9 +44,7 @@ class Auth:
         """
         if self._db.get_user_by_email(email):
             raise ValueError(f"User {email} already exists")
-        
         hashed_password = self._hash_password(password)
-        
         user = self._db.add_user(email, hashed_password)
-        
+
         return user

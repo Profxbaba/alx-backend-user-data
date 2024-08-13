@@ -1,50 +1,47 @@
 #!/usr/bin/env python3
 """
-Auth class to handle user authentication and registration.
+Module for user authentication.
 """
 
 from db import DB
-from models.user import User
 import bcrypt
 
-
 class Auth:
-    """Auth class to interact with the authentication database.
     """
-
+    Class to handle authentication.
+    """
+    
     def __init__(self):
-        """Initialize Auth with a DB instance."""
-        self._db = DB()
+        """
+        Initialize the Auth class.
+        """
+        self.db = DB()
 
-    def _hash_password(self, password: str) -> str:
-        """Hash a password string using bcrypt.
+    def register_user(self, email: str, password: str) -> None:
+        """
+        Register a user with an email and a hashed password.
 
         Args:
-            password (str): The password to hash.
-
-        Returns:
-            str: The hashed password.
+            email (str): The user's email.
+            password (str): The user's password.
         """
-        salt = bcrypt.gensalt()
-        hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-        return hashed.decode('utf-8')
+        hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+        self.db.add_user(email, hashed_password)
 
-    def register_user(self, email: str, password: str) -> User:
-        """Register a new user with the given email and password.
+    def valid_login(self, email: str, password: str) -> bool:
+        """
+        Validate user login with email and password.
 
         Args:
-            email (str): The email of the user.
-            password (str): The password of the user.
-
-        Raises:
-            ValueError: If a user with the given email already exists.
+            email (str): The user's email.
+            password (str): The user's password.
 
         Returns:
-            User: The newly created User object.
+            bool: True if the email exists and the password matches, False otherwise.
         """
-        if self._db.get_user_by_email(email):
-            raise ValueError(f"User {email} already exists")
-        hashed_password = self._hash_password(password)
-        user = self._db.add_user(email, hashed_password)
-
-        return user
+        user = self.db.get_user_by_email(email)
+        if user is None:
+            return False
+        
+        hashed_password = user.password
+        return bcrypt.checkpw(password.encode(), hashed_password)

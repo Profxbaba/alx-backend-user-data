@@ -4,8 +4,8 @@ Main file
 """
 from auth import Auth
 
-email = 'bob@bob.com'  # Ensure this email is unique
-password = 'MyPwdOfBob'
+email = 'newuser@example.com'  # Ensure this email is unique
+password = 'MyPwdOfNewUser'
 auth = Auth()
 
 # Register a new user

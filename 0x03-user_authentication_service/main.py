@@ -2,20 +2,14 @@
 """
 Main file
 """
-from auth import Auth
 
-email = 'newuser@example.com'  # Ensure this email is unique
-password = 'MyPwdOfNewUser'
-auth = Auth()
+from db import DB
+from user import User
 
-# Register a new user
-try:
-    auth.register_user(email, password)
-except ValueError as e:
-    print(f"Error: {e}")
+my_db = DB()
 
-# Create a session for the registered user
-print(auth.create_session(email))
+user_1 = my_db.add_user("test@test.com", "SuperHashedPwd")
+print(user_1.id)
 
-# Attempt to create a session for an unknown email
-print(auth.create_session("unknown@example.com"))
+user_2 = my_db.add_user("test1@test.com", "SuperHashedPwd1")
+print(user_2.id)

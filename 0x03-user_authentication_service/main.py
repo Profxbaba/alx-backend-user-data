@@ -4,14 +4,18 @@ Main file
 """
 from auth import Auth
 
-email = 'bob@bob.com'
+email = 'bob@bob.com'  # Ensure this email is unique
 password = 'MyPwdOfBob'
 auth = Auth()
 
-auth.register_user(email, password)
+# Register a new user
+try:
+    auth.register_user(email, password)
+except ValueError as e:
+    print(f"Error: {e}")
 
-print(auth.valid_login(email, password))
+# Create a session for the registered user
+print(auth.create_session(email))
 
-print(auth.valid_login(email, "WrongPwd"))
-
-print(auth.valid_login("unknown@email", password))
+# Attempt to create a session for an unknown email
+print(auth.create_session("unknown@example.com"))

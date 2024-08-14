@@ -1,35 +1,38 @@
 #!/usr/bin/env python3
 """
-Flask application module for handling user creation.
+Flask application for user registration.
 """
 
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify
 from auth import Auth
 
+# Initialize Flask app and Auth instance
 app = Flask(__name__)
-auth = Auth()
+AUTH = Auth()
 
 
 @app.route('/users', methods=['POST'])
-def register_user() -> str:
+def register_user():
     """
-    Handles POST requests to /users for user registration.
+    Handles user registration via POST request to /users.
+    Expects 'email' and 'password' fields in form data.
 
-    Checks the provided email and password, registers the user if valid,
-    and returns a JSON payload with the success message or error message.
-    """
+    Returns:
+        JSON: A response with the email and a message if the user is created.
+        JSON: A response with a message and status 400 if email isregistered.
+        """
     email = request.form.get('email')
     password = request.form.get('password')
 
     if not email or not password:
-        abort(400, description="Email and password are required")
+        return jsonify({"message": "email and password are required"}), 400
 
     try:
-        auth.register_user(email, password)
-        return jsonify({"email": email, "message": "user created"})
-    except ValueError as e:
-        return jsonify({"message": str(e)}), 400
+        user = AUTH.register_user(email, password)
+        return jsonify({"email": user.email, "message": "user created"})
+    except ValueError as err:
+        return jsonify({"message": str(err)}), 400
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

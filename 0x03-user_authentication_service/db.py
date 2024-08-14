@@ -40,7 +40,7 @@ class DB:
 
     def find_user_by(self, **kwargs: Dict[str, Any]) -> TypeVar('User'):
         """
-        Finds the first user in the database that matches the criteria
+        Finds the first user in the database that matches the criteria 
         provided by keyword arguments.
 
         Args:
@@ -64,6 +64,34 @@ class DB:
                 raise NoResultFound("No user found with the given parameters")
             return user
         except InvalidRequestError as e:
+            session.rollback()
+            raise e
+        finally:
+            session.close()
+
+    def update_user(self, user_id: int, **kwargs: Dict[str, Any]) -> None:
+        """
+        Updates a user's attributes based on the provided keyword arguments.
+
+        Args:
+            user_id (int): The ID of the user to update.
+            kwargs (dict): Arbitrary keyword arguments representing the user's
+                           attributes to update.
+
+        Raises:
+            ValueError: If any of the kwargs do not correspond to a valid 
+                        user attribute.
+        """
+        session = self._Session()
+
+        try:
+            user = self.find_user_by(id=user_id)
+            for key, value in kwargs.items():
+                if not hasattr(user, key):
+                    raise ValueError(f"{key} is not a valid attribute of User")
+                setattr(user, key, value)
+            session.commit()
+        except Exception as e:
             session.rollback()
             raise e
         finally:

@@ -3,36 +3,19 @@
 Auth module for handling user authentication.
 """
 
-from werkzeug.security import generate_password_hash
-from db import DB
-from typing import Optional
+import bcrypt
 
 
-class Auth:
+def _hash_password(password: str) -> bytes:
     """
-    Auth class for managing user authentication and session management.
+    Hashes a password using bcrypt and returns the salted hash.
+
+    Args:
+        password (str): The password to hash.
+
+    Returns:
+        bytes: The salted hash of the password.
     """
-    def __init__(self):
-        """
-        Initializes the Auth instance with a DB instance.
-        """
-        self.db = DB()
-
-    def register_user(self, email: str, password: str) -> None:
-        """
-        Registers a new user with the given email and password.
-
-        If the user already exists, raises a ValueError with a message
-
-        Args:
-            email (str): The user's email address.
-            password (str): The user's password.
-
-        Raises:
-            ValueError: If a user with the given email already exists.
-        """
-        if self.db.get_user_by_email(email):
-            raise ValueError(f"User {email} already exists")
-
-        hashed_password = generate_password_hash(password)
-        self.db.add_user(email, hashed_password)
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password

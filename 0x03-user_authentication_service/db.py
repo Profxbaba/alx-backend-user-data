@@ -40,7 +40,7 @@ class DB:
 
     def find_user_by(self, **kwargs: Dict[str, Any]) -> TypeVar('User'):
         """
-        Finds the first user in the database that matches the criteria 
+        Finds the first user in the database that matches the criteria
         provided by keyword arguments.
 
         Args:
@@ -79,8 +79,8 @@ class DB:
                            attributes to update.
 
         Raises:
-            ValueError: If any of the kwargs do not correspond to a valid 
-                        user attribute.
+            ValueError: If any of the kwargs do not correspond to a valid
+            user attribute.
         """
         session = self._Session()
 

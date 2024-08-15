@@ -1,23 +1,17 @@
 #!/usr/bin/env python3
 """
-Main file for testing the Auth class.
+Main file
 """
-
 from auth import Auth
 
-email = 'me@me.com'
-password = 'mySecuredPwd'
-
+email = 'bob@bob.com'
+password = 'MyPwdOfBob'
 auth = Auth()
 
-try:
-    user = auth.register_user(email, password)
-    print("successfully created a new user!")
-except ValueError as err:
-    print(f"could not create a new user: {err}")
+auth.register_user(email, password)
 
-try:
-    user = auth.register_user(email, password)
-    print("successfully created a new user!")
-except ValueError as err:
-    print(f"could not create a new user: {err}")
+print(auth.valid_login(email, password))
+
+print(auth.valid_login(email, "WrongPwd"))
+
+print(auth.valid_login("unknown@email", password))

@@ -39,7 +39,7 @@ class Auth:
             self._db.find_user_by(email=email)
             raise ValueError(f"User {email} already exists")
         except NoResultFound:
-            # If the user does not exist, hash the password and create a new user
+            # If the user does not exist, hash the password & create a new user
             hashed_password = bcrypt.hashpw(password.encode('utf-8'),
                                             bcrypt.gensalt())
             return self._db.add_user(email, hashed_password)

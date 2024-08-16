@@ -8,7 +8,7 @@ import bcrypt
 
 def _hash_password(password: str) -> bytes:
     """
-    Hashes a password string using bcrypt and returns the hashed password as bytes.
+    Hashes a password string using bcrypt & returns hashed password as bytes.
 
     Args:
         password (str): The password to hash.

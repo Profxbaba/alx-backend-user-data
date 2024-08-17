@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-This module provides authentication methods, including password hashing.
+Module to hash password and interact with auth DB
 """
-
+# import bcrypt
 import bcrypt
 from db import DB
 from user import User
@@ -11,49 +11,69 @@ from sqlalchemy.exc import NoResultFound
 
 def _hash_password(password: str) -> bytes:
     """
-    Hashes a password string using bcrypt & returns hashed password as bytes.
+    Hashes a password using bcrypt.
 
-    Args:
-        password (str): The password to hash.
-
-    Returns:
-        bytes: The salted and hashed password.
+    password: Raw unhashed password.
+    return: Hashed password as bytes.
     """
-    # Generate a salt and hash the password
+    encoded_pwd = password.encode("utf-8")
+
     salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(password.encode(), salt)
-    return hashed_password
+
+    hashed_pwd = bcrypt.hashpw(encoded_pwd, salt)
+
+    return hashed_pwd
 
 
 class Auth:
-    """Auth class to interact with the authentication database."""
+    """
+    Auth class to interact with the authentication database.
+    """
 
-    def __init__(self):
-        """Initialize the Auth class with a DB instance."""
+    def __init__(self) -> None:
+        """
+        Initialize the instance
+        """
         self._db = DB()
 
     def register_user(self, email: str, password: str) -> User:
         """
-        Registers a new user with the given email and password.
+        Registers a new user and returns a User object.
 
-        Args:
-            email (str): The email address of the user.
-            password (str): The password for the user.
-
-        Returns:
-            User: The created User object.
-
-        Raises:
-            ValueError: If a user with the given email already exists.
+        email: User's email.
+        password: User's password.
+        return: User object.
+        raises ValueError: If the user with the given email already exists.
         """
         try:
-            # Check if the user already exists
-            self._db.find_user_by(email=email)
-            raise ValueError(f"User {email} already exists")
+            existing_user = self._db.find_user_by(email=email)
+            if existing_user:
+                raise ValueError(f"User {email} already exists")
         except NoResultFound:
-            # If no user is found, proceed with user creation
-            hashed_password = _hash_password(password)
-            new_user = self._db.add_user(
-                    email=email, hashed_password=hashed_password
-            )
-            return new_user
+            pass
+
+            hashed_pwd = _hash_password(password)
+
+            new_usr = self._db.add_user(
+                    email=email, hashed_password=hashed_pwd.decode("utf-8"))
+            self._db
+            return new_usr
+
+
+if __name__ == '__main__':
+    email = 'me@me.com'
+    password = 'mySecuredPws'
+
+    auth = Auth()
+
+    try:
+        user = auth.register_user(email, password)
+        print("successfully created a new user!")
+    except ValueError as err:
+        print("could not create a new user: {}".format(err))
+
+    try:
+        user = auth.register_user(email, password)
+        print("successfully created a new user!")
+    except ValueError as err:
+        print("could not create a new user: {}".format(err))
